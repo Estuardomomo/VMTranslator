@@ -18,7 +18,7 @@ public class Parser {
     LinkedList arithmeticCommand;
     private String argument;
     private int argument2;
-    public Parser(String address){
+        public Parser(String address){
         //create the list with the arithmetic commands
         arithmeticCommand = new LinkedList();
         arithmeticCommand.add("add");
@@ -30,39 +30,49 @@ public class Parser {
         arithmeticCommand.add("and");
         arithmeticCommand.add("or");
         arithmeticCommand.add("not");
+        //Initialize the code_writer class
+        code_writer writer = new code_writer();
         //Opens the input file and gets ready to parse it
     try{
-        FileReader reader = new FileReader(address + "vm");
+        FileReader reader = new FileReader(address + ".vm");
         BufferedReader buffer = new BufferedReader(reader);
+        writer.setFileName(address + ".asm");
         String line = buffer.readLine();
         while(line != null){
             if(line.contains("//")){
                 line = line.substring(0,line.indexOf("/"));
             }
+            line = line.trim();
             switch(commandType(line.toLowerCase())){
                 case "C_ARITHMETIC":
                 {
-                    //code
+                    writer.writeArithmetic(arg1());
                     break;
                 }
                 case "C_PUSH":
                 {
+                    writer.writePushPop("push", arg1(), arg2());
                     break;
                 }
                 case "C_POP":
                 {
+                    writer.writePushPop("pop", arg1(), arg2());
                     break;
                 }
                 default:
                 {
+                    String compu = "";
                     break;
                 }
             }
             line = buffer.readLine();
         }
+        writer.close();
+        buffer.close();
+        reader.close();
     }catch(IOException e){}
     }
-    //returns the type of the current vm command
+            //returns the type of the current vm command
     private String commandType(String command){
         if(!command.equals("")){
             String[] fragment = command.split(" ");
@@ -119,7 +129,7 @@ public class Parser {
         }
     return "";
     }
-    //Returns the first argument of the current command
+        //Returns the first argument of the current command
     private String arg1(){
     return argument;
     }
